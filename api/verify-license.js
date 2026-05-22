@@ -19,7 +19,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const params = new URLSearchParams({
-      product_id: 'bfxzo',
+      product_id: '_VoKk0PDmGozRE-s0a1v5Q==',
       license_key: license_key.trim(),
       increment_uses_count: 'true',
     });
@@ -31,12 +31,23 @@ module.exports = async function handler(req, res) {
     });
 
     const data = await response.json();
+
+    if (!data.success) {
+      console.error('Gumroad verification failed:', JSON.stringify({
+        http_status: response.status,
+        gumroad_response: data,
+        license_key_used: license_key.trim(),
+        product_id: '_VoKk0PDmGozRE-s0a1v5Q==',
+      }));
+    }
+
     return res.status(200).json(data);
   } catch (error) {
-    console.error('Gumroad verification error:', error);
+    console.error('Gumroad verification error:', error.message, error.stack);
     return res.status(500).json({
       success: false,
       message: 'Verification service unavailable. Please try again.',
+      debug_error: error.message,
     });
   }
 };

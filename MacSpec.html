@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MacSpec, Compare Apple M-series chips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --bg-alt: #f5f5f7;
+    --bg-soft: #fafafc;
+    --border: #e6e6ea;
+    --border-strong: #d6d6dc;
+    --text: #111114;
+    --text-muted: #6e6e76;
+    --text-faint: #9a9aa2;
+    --accent: #0071e3;
+    --accent-hover: #0058b3;
+    --accent-tint: #e8f1fd;
+    --accent-tint-2: #f0f6fe;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 1px 2px rgba(17,17,20,.04), 0 1px 1px rgba(17,17,20,.03);
+    --shadow-md: 0 8px 30px rgba(17,17,20,.10), 0 2px 6px rgba(17,17,20,.06);
+
+    /* table sizes, mobile defaults */
+    --label-col: 142px;
+    --chip-col: 138px;
+    --add-col: 56px;
+    --row-h: 60px;
+    --row-h-tall: 92px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.45;
+  }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner{
+    max-width: 1180px; margin: 0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    height: 52px;
+    padding: 0 20px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    font-weight: 700; font-size: 17px; letter-spacing: -0.01em;
+    color: var(--text); text-decoration: none;
+  }
+  .brand-glyph{
+    position: relative;
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    background: var(--text);
+    display:grid; place-items:center;
+  }
+  .brand-glyph .pin-row{
+    position:absolute; left:5px; right:5px; height:3px;
+    background-image: linear-gradient(to right, var(--text) 0 3px, transparent 3px 6px);
+    background-size: 6px 100%;
+  }
+  .brand-glyph .pin-row.top{ top:-3px; }
+  .brand-glyph .pin-row.bot{ bottom:-3px; }
+  .brand-glyph .pin-col{
+    position:absolute; top:5px; bottom:5px; width:3px;
+    background-image: linear-gradient(to bottom, var(--text) 0 3px, transparent 3px 6px);
+    background-size: 100% 6px;
+  }
+  .brand-glyph .pin-col.left{ left:-3px; }
+  .brand-glyph .pin-col.right{ right:-3px; }
+  .brand-mark-inner{ width: 10px; height: 10px; border-radius: 2px; background: #fff; }
+
+  .nav-cta{
+    font: inherit;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid rgba(0,113,227,.35);
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+    white-space: nowrap;
+  }
+  .nav-cta:hover{ background: var(--accent-tint); border-color: var(--accent); }
+  .nav-cta.is-unlocked{
+    color: var(--text-muted);
+    border-color: var(--border-strong);
+    background: var(--bg-alt);
+    cursor: default;
+  }
+  .nav-cta .check{
+    display:inline-block;
+    width:14px; height:14px; border-radius:50%;
+    background: #2ea44f; color:#fff;
+    font-size: 10px; line-height: 14px; text-align:center;
+    margin-right:6px; vertical-align:-2px;
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap{
+    max-width: 1180px; margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{ padding: 44px 0 12px; }
+  .hero h1{
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .hero p.sub{
+    color: var(--text-muted);
+    font-size: 16px;
+    margin: 0 0 28px;
+    max-width: 36ch;
+    text-wrap: pretty;
+  }
+  .picker{
+    display: flex; flex-direction: column;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .field{ position: relative; }
+  .field-label{
+    display:block;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--text-faint);
+    margin: 0 0 7px 2px;
+  }
+  .select{
+    appearance: none; -webkit-appearance: none;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 14px 44px 14px 16px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .select:hover{ border-color: #bfbfc7; }
+  .select:focus{ outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,113,227,.15); }
+  .field::after{
+    content:"";
+    position:absolute; right:18px; top: calc(50% + 14px);
+    width: 8px; height: 8px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: translateY(-50%) rotate(45deg);
+    pointer-events: none;
+  }
+  .btn-compare{
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 15px 20px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background .15s ease, transform .05s ease;
+  }
+  .btn-compare:hover{ background: var(--accent-hover); }
+  .btn-compare:active{ transform: scale(.99); }
+
+  /* ---------- Results ---------- */
+  .results{ margin-top: 18px; padding: 8px 0 24px; }
+  .results[hidden]{ display:none; }
+
+  .result-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap: 12px;
+    margin: 6px 0 14px;
+  }
+  .result-head h2{
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin: 0;
+  }
+  .result-head .meta{
+    font-size: 12.5px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-hint{
+    display:flex; align-items:center; gap:6px;
+    color: var(--text-faint);
+    font-size: 12px;
+    margin: -4px 0 10px;
+  }
+  .scroll-hint .arrow{
+    display:inline-block; width: 14px; height: 14px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    margin-left: 2px;
+    animation: nudge 1.4s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: rotate(-45deg) translate(0,0); opacity: .6; }
+    50%       { transform: rotate(-45deg) translate(3px,-3px); opacity: 1; }
+  }
+
+  /* ---------- Compare table ---------- */
+  .compare-wrap{
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .compare-scroll{
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scroll-padding-left: var(--label-col);
+  }
+  .compare-grid{
+    display: grid;
+    grid-auto-rows: min-content;
+  }
+  .cell{
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    min-height: var(--row-h);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #fff;
+  }
+  .cell.tall{ min-height: var(--row-h-tall); }
+  .cell.sticky-left{
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    border-right: 1px solid var(--border);
+    background-clip: padding-box;
+  }
+  .compare-scroll.is-scrolled .cell.sticky-left{
+    box-shadow: 4px 0 8px -4px rgba(17,17,20,.10);
+  }
+
+  /* Header row */
+  .cell.head{
+    min-height: 56px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .cell.head.sticky-left{ background: #fff; }
+  .chip-head{
+    display:flex !important; flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .chip-head .chip-name{
+    font-weight: 700; letter-spacing: -0.01em; font-size: 15px;
+  }
+  .chip-head .remove{
+    width: 22px; height: 22px;
+    border: 0;
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 22px;
+    padding: 0;
+    transition: background .15s ease, color .15s ease;
+  }
+  .chip-head .remove:hover{ background: #ececef; color: var(--text); }
+
+  /* Section title row */
+  .cell.section-row{
+    background: var(--bg-soft);
+    min-height: 38px;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cell.section-row .label{
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+  .cell.section-row.sticky-left{ background: var(--bg-soft); }
+
+  /* Spec rows */
+  .cell.label{
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .cell.val{
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cell.val .v{ overflow-wrap: anywhere; }
+
+  /* row stripes */
+  .cell.stripe{ background: var(--bg-alt); }
+  .cell.stripe.sticky-left{ background: var(--bg-alt); }
+
+  /* best highlight */
+  .cell.val.is-best .v{ color: var(--accent); }
+  .cell.val.is-best .v::after{
+    content:"";
+    display: inline-block;
+    margin-left: 8px;
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* Add chip column */
+  .cell.add-cell{
+    background: #fff;
+    border-left: 1px dashed var(--border-strong);
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 12px;
+  }
+  .cell.add-cell.stripe{ background: #fff; }
+  .add-btn{
+    width: 36px; height: 36px;
+    border-radius: 999px;
+    border: 1px dashed var(--border-strong);
+    background: #fff;
+    color: var(--accent);
+    font-size: 22px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: grid; place-items: center;
+    transition: border-color .15s ease, background .15s ease, transform .08s ease;
+  }
+  .add-btn:hover{ border-color: var(--accent); background: var(--accent-tint); }
+  .add-btn:active{ transform: scale(.96); }
+  .add-cell .add-hint{
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 8px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .cell.add-cell.filler{
+    background: repeating-linear-gradient(135deg,
+      transparent 0 8px,
+      rgba(0,0,0,.018) 8px 9px);
+    border-left: 1px dashed var(--border-strong);
+  }
+
+  /* Pending chip column (paid user adding) */
+  .pending-col{
+    display:flex; flex-direction:column;
+    gap: 8px;
+    padding: 10px;
+    align-items: stretch;
+  }
+  .pending-col select{
+    width: 100%;
+    appearance: none; -webkit-appearance: none;
+    background: #fff;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 8px 30px 8px 10px;
+    font: inherit; font-size: 14px; font-weight: 600;
+    box-shadow: 0 0 0 3px rgba(0,113,227,.12);
+    cursor: pointer;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+      linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+    background-position: calc(100% - 16px) 14px, calc(100% - 11px) 14px;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .pending-cancel{
+    background: transparent;
+    border: 0;
+    color: var(--text-muted);
+    font: inherit; font-size: 12px;
+    cursor: pointer;
+    padding: 2px;
+    text-decoration: underline;
+    text-decoration-color: var(--border-strong);
+    text-underline-offset: 2px;
+  }
+
+  /* ---------- Paywall modal ---------- */
+  .scrim{
+    position: fixed; inset: 0;
+    background: rgba(17,17,20,.45);
+    backdrop-filter: blur(2px);
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+    display: grid; place-items: center;
+    padding: 16px;
+  }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  .paywall-modal{
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: var(--shadow-md);
+    padding: 26px 22px 22px;
+    transform: translateY(10px) scale(.98);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1);
+  }
+  .scrim.open .paywall-modal{ transform: translateY(0) scale(1); }
+  .paywall-icon{
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--accent-tint);
+    color: var(--accent);
+    display: grid; place-items: center;
+    margin-bottom: 14px;
+  }
+  .paywall-modal h3{
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .paywall-modal p.sub{
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 18px;
+    text-wrap: pretty;
+  }
+  .paywall-modal .btn-pay{
+    display:block;
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 15px 20px;
+    font: inherit; font-size: 16px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .paywall-modal .btn-pay:hover{ background: var(--accent-hover); }
+  .paywall-modal .trust{
+    color: var(--text-faint);
+    font-size: 12.5px;
+    text-align: center;
+    margin: 12px 0 6px;
+  }
+  .paywall-modal .later{
+    display:block; width:100%;
+    background: transparent; border: 0;
+    color: var(--text-muted);
+    font: inherit; font-size: 14px; font-weight: 500;
+    padding: 8px;
+    cursor: pointer;
+  }
+  .paywall-modal .later:hover{ color: var(--text); }
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top: 1px solid var(--border);
+    padding: 28px 20px 36px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12.5px;
+  }
+
+  /* ---------- Desktop ---------- */
+  @media (min-width: 760px){
+    :root{
+      --label-col: 200px;
+      --chip-col: 180px;
+      --add-col: 80px;
+      --row-h: 60px;
+    }
+    .nav-inner{ height: 60px; padding: 0 32px; }
+    .wrap{ padding: 0 32px; }
+    .hero{ padding: 80px 0 24px; }
+    .hero h1{ font-size: 54px; letter-spacing: -0.03em; }
+    .hero p.sub{ font-size: 18px; max-width: 52ch; margin-bottom: 32px; }
+    .picker{
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      align-items: end;
+      gap: 14px;
+      max-width: 820px;
+    }
+    .btn-compare{
+      margin-top: 0;
+      width: auto;
+      padding: 14px 28px;
+      height: 50px;
+    }
+    .result-head h2{ font-size: 28px; }
+    .scroll-hint{ display:none; }
+    .cell{ padding: 14px 18px; }
+    .chip-head{ padding: 12px 16px; }
+    .cell.head{ min-height: 60px; }
+    .chip-head .chip-name{ font-size: 16px; }
+    .cell.val{ font-size: 16px; }
+  }
+  @media (min-width: 1000px){
+    .hero h1{ font-size: 64px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#" class="brand" aria-label="MacSpec home">
+      <span class="brand-glyph" aria-hidden="true">
+        <span class="pin-row top"></span>
+        <span class="pin-row bot"></span>
+        <span class="pin-col left"></span>
+        <span class="pin-col right"></span>
+        <span class="brand-mark-inner"></span>
+      </span>
+      <span>MacSpec</span>
+    </a>
+    <button class="nav-cta" id="navCta" type="button">Unlock Unlimited</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>Finally understand Apple's chip lineup.</h1>
+    <p class="sub">Pick any two chips and see exactly how they compare. Compare as many pairs as you like, free forever.</p>
+
+    <form class="picker" id="picker" onsubmit="event.preventDefault(); resetWithPair();">
+      <div class="field">
+        <label class="field-label" for="chipA">Select first chip</label>
+        <select class="select" id="chipA" aria-label="Select first chip"></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="chipB">Select second chip</label>
+        <select class="select" id="chipB" aria-label="Select second chip"></select>
+      </div>
+      <button class="btn-compare" type="submit">Compare</button>
+    </form>
+  </section>
+
+  <section class="results" id="results" aria-live="polite">
+    <div class="result-head">
+      <h2 id="resultTitle">Comparison</h2>
+      <span class="meta" id="metaPill"></span>
+    </div>
+    <div class="scroll-hint" id="scrollHint" hidden>
+      <span>Swipe to see more</span>
+      <span class="arrow" aria-hidden="true"></span>
+    </div>
+    <div class="compare-wrap">
+      <div class="compare-scroll" id="compareScroll">
+        <div class="compare-grid" id="grid"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  MacSpec is not affiliated with Apple Inc.
+</footer>
+
+<!-- Paywall modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="payTitle" hidden>
+  <div class="paywall-modal">
+    <div class="paywall-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <h3 id="payTitle">Want to compare more chips?</h3>
+    <p class="sub">Unlock unlimited multi-chip comparisons for one single payment of <strong>$2</strong>. Two-chip comparisons stay free forever.</p>
+    <button class="btn-pay" type="button" onclick="unlock()">Unlock for $2</button>
+    <p class="trust">One-time payment of $2.</p>
+    <button class="later" type="button" onclick="closePaywall()">Maybe later</button>
+  </div>
+</div>
+
+<script>
+  // ---------- Data ----------
+  const CHIPS = [
+    {id:"m1",      name:"M1",        year:2020, pCores:4,  eCores:4,  gpu:8,  neural:16, maxMemGB:16,  memBwGBs:68.25, node:"5nm", nodeRank:3, transistorsB:16,   mediaEngines:0, maxDisplays:2, ships:"MacBook Air, 13-inch MacBook Pro, Mac mini, iMac",         bestFor:"Everyday computing, web, and light creative work."},
+    {id:"m1pro",   name:"M1 Pro",    year:2021, pCores:8,  eCores:2,  gpu:16, neural:16, maxMemGB:32,  memBwGBs:200,   node:"5nm", nodeRank:3, transistorsB:33.7, mediaEngines:1, maxDisplays:3, ships:"14-inch and 16-inch MacBook Pro (2021)",                   bestFor:"Pro workflows, code, photo, and multi-stream video."},
+    {id:"m1max",   name:"M1 Max",    year:2021, pCores:8,  eCores:2,  gpu:32, neural:16, maxMemGB:64,  memBwGBs:400,   node:"5nm", nodeRank:3, transistorsB:57,   mediaEngines:2, maxDisplays:4, ships:"14-inch and 16-inch MacBook Pro, Mac Studio (2021-22)",    bestFor:"Heavy 3D, color, and high-end video editing."},
+    {id:"m1ultra", name:"M1 Ultra",  year:2022, pCores:16, eCores:4,  gpu:64, neural:32, maxMemGB:128, memBwGBs:800,   node:"5nm", nodeRank:3, transistorsB:114,  mediaEngines:4, maxDisplays:5, ships:"Mac Studio (2022)",                                        bestFor:"Studio-grade rendering and massive parallel workloads."},
+    {id:"m2",      name:"M2",        year:2022, pCores:4,  eCores:4,  gpu:10, neural:16, maxMemGB:24,  memBwGBs:100,   node:"5nm", nodeRank:3, transistorsB:20,   mediaEngines:1, maxDisplays:2, ships:"MacBook Air, 13-inch MacBook Pro, Mac mini",              bestFor:"A balanced step up from M1 for daily and creative use."},
+    {id:"m2pro",   name:"M2 Pro",    year:2023, pCores:8,  eCores:4,  gpu:19, neural:16, maxMemGB:32,  memBwGBs:200,   node:"5nm", nodeRank:3, transistorsB:40,   mediaEngines:1, maxDisplays:3, ships:"14-inch and 16-inch MacBook Pro, Mac mini (2023)",         bestFor:"Developers and creators wanting more cores without Max power."},
+    {id:"m2max",   name:"M2 Max",    year:2023, pCores:8,  eCores:4,  gpu:38, neural:16, maxMemGB:96,  memBwGBs:400,   node:"5nm", nodeRank:3, transistorsB:67,   mediaEngines:2, maxDisplays:4, ships:"14-inch and 16-inch MacBook Pro, Mac Studio (2023)",       bestFor:"Demanding pro video, 3D, and ML on the go."},
+    {id:"m2ultra", name:"M2 Ultra",  year:2023, pCores:16, eCores:8,  gpu:76, neural:32, maxMemGB:192, memBwGBs:800,   node:"5nm", nodeRank:3, transistorsB:134,  mediaEngines:4, maxDisplays:6, ships:"Mac Studio and Mac Pro (2023)",                            bestFor:"The most demanding studio and ML workloads."},
+    {id:"m3",      name:"M3",        year:2023, pCores:4,  eCores:4,  gpu:10, neural:16, maxMemGB:24,  memBwGBs:100,   node:"3nm", nodeRank:2, transistorsB:25,   mediaEngines:1, maxDisplays:2, ships:"iMac, MacBook Air, 14-inch MacBook Pro",                  bestFor:"Efficient everyday performance on the latest node."},
+    {id:"m3pro",   name:"M3 Pro",    year:2023, pCores:6,  eCores:6,  gpu:18, neural:16, maxMemGB:36,  memBwGBs:150,   node:"3nm", nodeRank:2, transistorsB:37,   mediaEngines:1, maxDisplays:3, ships:"14-inch and 16-inch MacBook Pro (2023)",                  bestFor:"All-day pro work with a focus on efficiency."},
+    {id:"m3max",   name:"M3 Max",    year:2023, pCores:12, eCores:4,  gpu:40, neural:16, maxMemGB:128, memBwGBs:400,   node:"3nm", nodeRank:2, transistorsB:92,   mediaEngines:2, maxDisplays:4, ships:"14-inch and 16-inch MacBook Pro (2023)",                  bestFor:"Top-tier portable performance for film and 3D pros."},
+    {id:"m4",      name:"M4",        year:2024, pCores:4,  eCores:6,  gpu:10, neural:16, maxMemGB:32,  memBwGBs:120,   node:"3nm", nodeRank:1, transistorsB:28,   mediaEngines:1, maxDisplays:2, ships:"iPad Pro, iMac, MacBook Pro, MacBook Air, Mac mini",      bestFor:"The latest mainstream chip with strong ML acceleration."},
+    {id:"m4pro",   name:"M4 Pro",    year:2024, pCores:10, eCores:4,  gpu:20, neural:16, maxMemGB:64,  memBwGBs:273,   node:"3nm", nodeRank:1, transistorsB:39,   mediaEngines:2, maxDisplays:3, ships:"14-inch and 16-inch MacBook Pro, Mac mini (2024)",        bestFor:"Pro-level CPU and GPU headroom in a compact thermal envelope."},
+    {id:"m4max",   name:"M4 Max",    year:2024, pCores:12, eCores:4,  gpu:40, neural:16, maxMemGB:128, memBwGBs:546,   node:"3nm", nodeRank:1, transistorsB:75,   mediaEngines:2, maxDisplays:4, ships:"14-inch and 16-inch MacBook Pro (2024)",                  bestFor:"The fastest single-die Apple silicon for portable studios."},
+    {id:"m5",      name:"M5",        year:2025, pCores:4,  eCores:6,  gpu:10, neural:16, maxMemGB:32,  memBwGBs:153,   node:"3nm", nodeRank:1, transistorsB:32,   mediaEngines:1, maxDisplays:2, ships:"14-inch MacBook Pro, iPad Pro",                           bestFor:"Next-gen mainstream chip with refined efficiency and stronger ML.", coresLabel:"10 (4 super + 6 efficiency)", coresCount:10},
+    {id:"m5pro",   name:"M5 Pro",    year:2026, pCores:6,  eCores:12, gpu:20, neural:16, maxMemGB:64,  memBwGBs:307,   node:"3nm", nodeRank:1, transistorsB:45,   mediaEngines:2, maxDisplays:3, ships:"14-inch and 16-inch MacBook Pro (2026)",                  bestFor:"Pro-grade headroom built on 3nm Fusion Architecture.", coresLabel:"18 (6 super + 12 performance)", coresCount:18},
+    {id:"m5max",   name:"M5 Max",    year:2026, pCores:0,  eCores:0,  gpu:40, neural:16, maxMemGB:128, memBwGBs:614,   node:"3nm", nodeRank:1, transistorsB:85,   mediaEngines:2, maxDisplays:4, ships:"14-inch and 16-inch MacBook Pro (2026)",                  bestFor:"Studio-class portable performance for film, 3D, and ML.", coresLabel:"18", coresCount:18}
+  ];
+
+  const SECTIONS = [
+    { title: "Performance", rows: [
+      { label: "CPU cores",             tall:false, fmt:c=>c.coresLabel || `${c.pCores+c.eCores} (${c.pCores}P + ${c.eCores}E)`, cmp:'higher', key:c=>c.coresCount || (c.pCores+c.eCores) },
+      { label: "GPU cores",             tall:false, fmt:c=>`${c.gpu}`,                                             cmp:'higher', key:c=>c.gpu },
+      { label: "Neural Engine cores",   tall:false, fmt:c=>`${c.neural}`,                                          cmp:'higher', key:c=>c.neural },
+    ]},
+    { title: "Memory", rows: [
+      { label: "Max unified memory",    tall:false, fmt:c=>`${c.maxMemGB} GB`,                                     cmp:'higher', key:c=>c.maxMemGB },
+      { label: "Memory bandwidth",      tall:false, fmt:c=>`${c.memBwGBs} GB/s`,                                   cmp:'higher', key:c=>c.memBwGBs },
+    ]},
+    { title: "Technical", rows: [
+      { label: "Process node",          tall:false, fmt:c=>c.node,                                                 cmp:'lower',  key:c=>c.nodeRank },
+      { label: "Transistor count",      tall:false, fmt:c=>`${c.transistorsB}B`,                                   cmp:'higher', key:c=>c.transistorsB },
+    ]},
+    { title: "Media", rows: [
+      { label: "Media engine count",    tall:false, fmt:c=>c.mediaEngines===0 ? "None" : `${c.mediaEngines}`,      cmp:'higher', key:c=>c.mediaEngines },
+    ]},
+    { title: "Compatibility", rows: [
+      { label: "Max external displays", tall:false, fmt:c=>`${c.maxDisplays}`,                                     cmp:'higher', key:c=>c.maxDisplays },
+      { label: "Ships in",              tall:true,  fmt:c=>c.ships,                                                cmp:null },
+    ]},
+    { title: "Overview", rows: [
+      { label: "Release year",          tall:false, fmt:c=>`${c.year}`,                                            cmp:null },
+      { label: "Best for",              tall:true,  fmt:c=>c.bestFor,                                              cmp:null },
+    ]},
+  ];
+
+  // ---------- State ----------
+  const STORAGE_KEY = "macspec.paid";
+  let isPaid = localStorage.getItem(STORAGE_KEY) === "1";
+  let selected = ["m1", "m4"];
+  let pendingPicker = false;
+
+  // ---------- Populate hero selects ----------
+  const selA = document.getElementById('chipA');
+  const selB = document.getElementById('chipB');
+  CHIPS.forEach(c => {
+    selA.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+    selB.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+  });
+  selA.value = selected[0];
+  selB.value = selected[1];
+
+  function findChip(id){ return CHIPS.find(c => c.id === id); }
+
+  function resetWithPair(){
+    let a = selA.value, b = selB.value;
+    if(a === b){
+      const other = CHIPS.find(c => c.id !== a);
+      b = other.id;
+      selB.value = b;
+    }
+    selected = [a, b];
+    pendingPicker = false;
+    render();
+    document.getElementById('compareScroll').scrollTo({left:0, behavior:'smooth'});
+  }
+
+  function onAddChipClick(){
+    if(selected.length >= 2 && !isPaid){
+      openPaywall();
+      return;
+    }
+    pendingPicker = true;
+    render();
+    requestAnimationFrame(() => {
+      const sc = document.getElementById('compareScroll');
+      sc.scrollTo({ left: sc.scrollWidth, behavior: 'smooth' });
+      const sel = document.getElementById('pendingSelect');
+      if(sel) sel.focus();
+    });
+  }
+
+  function confirmPendingChip(value){
+    if(!value) return;
+    if(selected.includes(value)){
+      pendingPicker = false;
+      render();
+      return;
+    }
+    selected.push(value);
+    pendingPicker = false;
+    render();
+    requestAnimationFrame(() => {
+      const sc = document.getElementById('compareScroll');
+      sc.scrollTo({ left: sc.scrollWidth, behavior: 'smooth' });
+    });
+  }
+
+  function cancelPending(){
+    pendingPicker = false;
+    render();
+  }
+
+  function removeChip(id){
+    if(selected.length <= 2) return;
+    selected = selected.filter(x => x !== id);
+    render();
+  }
+
+  // ---------- Paywall ----------
+  function openPaywall(){
+    const scrim = document.getElementById('scrim');
+    scrim.hidden = false;
+    requestAnimationFrame(() => scrim.classList.add('open'));
+    document.body.style.overflow = 'hidden';
+  }
+  function closePaywall(){
+    const scrim = document.getElementById('scrim');
+    scrim.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { scrim.hidden = true; }, 220);
+  }
+  function unlock(){
+    isPaid = true;
+    localStorage.setItem(STORAGE_KEY, "1");
+    updateNav();
+    closePaywall();
+    setTimeout(() => onAddChipClick(), 250);
+  }
+  function updateNav(){
+    const cta = document.getElementById('navCta');
+    if(isPaid){
+      cta.classList.add('is-unlocked');
+      cta.innerHTML = '<span class="check">&#10003;</span>Unlimited unlocked';
+      cta.onclick = null;
+    } else {
+      cta.classList.remove('is-unlocked');
+      cta.textContent = 'Unlock Unlimited';
+      cta.onclick = openPaywall;
+    }
+  }
+  document.getElementById('scrim').addEventListener('click', (e) => {
+    if(e.target.id === 'scrim') closePaywall();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closePaywall();
+  });
+
+  // ---------- Render ----------
+  function el(tag, cls, html){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  function render(){
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    const n = selected.length;
+    const showPending = pendingPicker;
+    const chipColCount = n + (showPending ? 1 : 0);
+
+    grid.style.gridTemplateColumns =
+      `var(--label-col) repeat(${chipColCount}, var(--chip-col)) var(--add-col)`;
+
+    const titleH = document.getElementById('resultTitle');
+    const meta = document.getElementById('metaPill');
+    titleH.textContent = selected.map(id => findChip(id).name).join(' vs ');
+    meta.textContent = `${n} ${n===1?'chip':'chips'} compared`;
+
+    // Header row
+    grid.appendChild(el('div','cell head sticky-left',''));
+
+    selected.forEach(id => {
+      const c = findChip(id);
+      const headEl = el('div', 'cell head chip-head');
+      headEl.innerHTML = `<span class="chip-name">${c.name}</span>` +
+        (n > 2 ? `<button class="remove" aria-label="Remove ${c.name}" data-remove="${id}">&times;</button>` : '');
+      grid.appendChild(headEl);
+    });
+
+    if(showPending){
+      const pcol = el('div', 'cell head pending-col');
+      const sel = document.createElement('select');
+      sel.id = 'pendingSelect';
+      sel.innerHTML = '<option value="">Pick a chip...</option>' +
+        CHIPS.filter(c => !selected.includes(c.id))
+             .map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      sel.addEventListener('change', e => confirmPendingChip(e.target.value));
+      pcol.appendChild(sel);
+      const cancel = document.createElement('button');
+      cancel.type = 'button';
+      cancel.className = 'pending-cancel';
+      cancel.textContent = 'Cancel';
+      cancel.addEventListener('click', cancelPending);
+      pcol.appendChild(cancel);
+      grid.appendChild(pcol);
+    }
+
+    const addHead = el('div', 'cell head add-cell');
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'add-btn';
+    addBtn.setAttribute('aria-label','Add another chip');
+    addBtn.innerHTML = '+';
+    addBtn.addEventListener('click', onAddChipClick);
+    addHead.appendChild(addBtn);
+    addHead.appendChild(el('div','add-hint','Add<br>chip'));
+    grid.appendChild(addHead);
+
+    // Sections and rows
+    let stripe = 0;
+    SECTIONS.forEach(section => {
+      grid.appendChild(el('div','cell section-row sticky-left',
+        `<span class="label">${section.title}</span>`));
+      for(let i=0;i<chipColCount;i++) grid.appendChild(el('div','cell section-row',''));
+      grid.appendChild(el('div','cell section-row add-cell filler',''));
+
+      section.rows.forEach(r => {
+        const stripeCls = (stripe % 2 === 0) ? '' : 'stripe';
+        const tallCls = r.tall ? 'tall' : '';
+
+        let bestIdxs = [];
+        if(r.cmp && n > 1){
+          const vals = selected.map(id => r.key(findChip(id)));
+          if(r.cmp === 'higher'){
+            const max = Math.max(...vals);
+            bestIdxs = vals.map((v,i)=> v===max ? i : -1).filter(i=>i>=0);
+          } else if(r.cmp === 'lower'){
+            const min = Math.min(...vals);
+            bestIdxs = vals.map((v,i)=> v===min ? i : -1).filter(i=>i>=0);
+          }
+          if(bestIdxs.length === n) bestIdxs = [];
+        }
+
+        grid.appendChild(el('div', `cell label sticky-left ${stripeCls} ${tallCls}`, r.label));
+
+        selected.forEach((id, i) => {
+          const c = findChip(id);
+          const isBest = bestIdxs.includes(i) ? 'is-best' : '';
+          grid.appendChild(el('div', `cell val ${stripeCls} ${tallCls} ${isBest}`,
+            `<span class="v">${r.fmt(c)}</span>`));
+        });
+
+        if(showPending){
+          grid.appendChild(el('div', `cell val ${stripeCls} ${tallCls}`,
+            `<span class="v" style="color:var(--text-faint); font-weight:500;">...</span>`));
+        }
+
+        grid.appendChild(el('div', `cell ${stripeCls} ${tallCls} add-cell filler`, ''));
+        stripe++;
+      });
+    });
+
+    grid.querySelectorAll('[data-remove]').forEach(b => {
+      b.addEventListener('click', () => removeChip(b.getAttribute('data-remove')));
+    });
+
+    requestAnimationFrame(() => {
+      const sc = document.getElementById('compareScroll');
+      const hint = document.getElementById('scrollHint');
+      hint.hidden = !(sc.scrollWidth - sc.clientWidth > 8);
+    });
+  }
+
+  const sc = document.getElementById('compareScroll');
+  sc.addEventListener('scroll', () => {
+    sc.classList.toggle('is-scrolled', sc.scrollLeft > 4);
+  });
+
+  // ---------- Init ----------
+  updateNav();
+  render();
+</script>
+
+</body>
+</html>
