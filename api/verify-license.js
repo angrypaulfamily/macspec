@@ -39,6 +39,19 @@ module.exports = async function handler(req, res) {
         license_key_used: license_key.trim(),
         product_id: '_VoKk0PDmGozRE-s0a1v5Q==',
       }));
+      return res.status(200).json(data);
+    }
+
+    const uses = data.uses ?? 0;
+    if (uses > 5) {
+      console.error('License key exceeded max activations:', JSON.stringify({
+        license_key_used: license_key.trim(),
+        uses,
+      }));
+      return res.status(200).json({
+        success: false,
+        message: 'This key has already been activated on 5 devices.',
+      });
     }
 
     return res.status(200).json(data);
