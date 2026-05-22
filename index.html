@@ -637,6 +637,7 @@ const SECTIONS = [
 
 // ---------- State ----------
 const STORAGE_KEY = "macspec.paid.v2";
+const KEY_STORAGE = "macspec.license_key.v2";
 let isPaid = localStorage.getItem(STORAGE_KEY) === "1";
 let selected = ["m1", "m4"];
 let pendingPicker = false;
@@ -758,7 +759,7 @@ async function verifyLicense(){
       status.textContent = 'License activated! Unlocking...';
       status.className = 'license-status success';
       setTimeout(() => {
-        unlock();
+        unlock(key);
       }, 700);
     } else if(data.purchase && data.purchase.refunded){
       status.textContent = 'This purchase has been refunded and cannot be used.';
@@ -786,9 +787,10 @@ async function verifyLicense(){
   }
 }
 
-function unlock(){
+function unlock(key){
   isPaid = true;
   localStorage.setItem(STORAGE_KEY, "1");
+  if(key) localStorage.setItem(KEY_STORAGE, key);
   updateNav();
   closePaywall();
   setTimeout(() => onAddChipClick(), 300);
