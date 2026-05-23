@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Top pins -->
+  <rect x="19" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="27" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="35" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="43" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="51" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="59" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="67" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="75" y="4" width="5" height="9" rx="1.5" fill="#111"/>
+  <!-- Bottom pins -->
+  <rect x="19" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="27" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="35" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="43" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="51" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="59" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="67" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <rect x="75" y="87" width="5" height="9" rx="1.5" fill="#111"/>
+  <!-- Left pins -->
+  <rect x="4" y="19" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="27" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="35" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="43" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="51" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="59" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="67" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="4" y="75" width="9" height="5" rx="1.5" fill="#111"/>
+  <!-- Right pins -->
+  <rect x="87" y="19" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="27" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="35" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="43" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="51" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="59" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="67" width="9" height="5" rx="1.5" fill="#111"/>
+  <rect x="87" y="75" width="9" height="5" rx="1.5" fill="#111"/>
+  <!-- Chip body -->
+  <rect x="13" y="13" width="74" height="74" rx="11" fill="#111"/>
+  <!-- Inner cutout -->
+  <rect x="27" y="27" width="46" height="46" rx="7" fill="white"/>
+  <!-- Blue dot -->
+  <circle cx="60" cy="61" r="8.5" fill="#2563EB"/>
+</svg>
